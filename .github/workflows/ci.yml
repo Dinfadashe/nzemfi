@@ -1,4 +1,4 @@
-name: NzemFi CI/CD
+﻿name: NzemFi CI/CD
 
 on:
   push:
@@ -7,24 +7,24 @@ on:
     branches: [main]
 
 jobs:
-  # ── Web App Build ─────────────────────────────────────────────────────────
   web:
     name: Web App Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
 
       - name: Install dependencies
-        working-directory: apps/web
         run: npm install
-
-      - name: Build
         working-directory: apps/web
+
+      - name: Build web app
         run: npm run build
+        working-directory: apps/web
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
