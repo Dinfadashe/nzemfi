@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
         });
       }
 
-      await supabase.rpc('increment_stream_count', { track_id });
+      await (supabase as any).rpc('increment_stream_count', { track_id });
     }
 
     await (supabase.from('listening_history') as any).insert({
