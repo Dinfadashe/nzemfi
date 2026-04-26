@@ -1,0 +1,41 @@
+{
+  "version": 2,
+  "name": "nzemfi-web",
+  "builds": [
+    {
+      "src": "apps/web/package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "apps/web/$1"
+    }
+  ],
+  "env": {
+    "NEXT_PUBLIC_SUPABASE_URL": "@supabase_url",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@supabase_anon_key",
+    "SUPABASE_SERVICE_ROLE_KEY": "@supabase_service_role_key",
+    "NEXT_PUBLIC_NZM_CONTRACT_ADDRESS": "@nzm_contract_address",
+    "NEXT_PUBLIC_BSC_RPC_URL": "@bsc_rpc_url",
+    "RESEND_API_KEY": "@resend_api_key",
+    "EYERIS_API_KEY": "@eyeris_api_key",
+    "ACRCLOUD_HOST": "@acrcloud_host",
+    "ACRCLOUD_ACCESS_KEY": "@acrcloud_access_key",
+    "ACRCLOUD_ACCESS_SECRET": "@acrcloud_access_secret",
+    "STRIPE_SECRET_KEY": "@stripe_secret_key",
+    "FLUTTERWAVE_SECRET_KEY": "@flutterwave_secret_key",
+    "MINTER_PRIVATE_KEY": "@minter_private_key"
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    }
+  ]
+}

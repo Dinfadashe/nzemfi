@@ -1,0 +1,19 @@
+{
+  "name": "nzemfi",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "cd apps/web && npm run dev",
+    "dev:mobile": "cd apps/mobile && npx expo start",
+    "build:web": "cd apps/web && npm run build",
+    "build:mobile:android": "cd apps/mobile && eas build --platform android",
+    "build:mobile:ios": "cd apps/mobile && eas build --platform ios"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0"
+  }
+}
