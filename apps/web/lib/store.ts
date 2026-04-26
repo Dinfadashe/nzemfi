@@ -1,7 +1,7 @@
 'use client';
 import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
-import type { Track, User } from '../supabase/database.types';
+import type { Track, User } from './supabase/database.types';
 
 // ── Player Store ──────────────────────────────────────────────────────────────
 export interface PlayerState {
@@ -10,15 +10,14 @@ export interface PlayerState {
   queueIndex: number;
   isPlaying: boolean;
   volume: number;
-  progress: number; // 0-100
-  duration: number; // seconds
+  progress: number;
+  duration: number;
   isShuffle: boolean;
   isRepeat: boolean;
   isRepeatOne: boolean;
   currentEarning: number;
   sessionEarned: number;
 
-  // Actions
   play: (track: Track, queue?: Track[]) => void;
   pause: () => void;
   resume: () => void;
