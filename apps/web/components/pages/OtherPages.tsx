@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { getStreamRate, getHalvingSchedule, TOKEN_CONSTANTS, formatNZM, nzmToUsd } from '@/lib/tokenomics';
+import { getHalvingSchedule } from '@/lib/tokenomics';
 import { useAuthStore } from '@/lib/store';
 import type { PageId } from '@/app/page';
 
@@ -16,7 +16,6 @@ export function TokenomicsPage() {
       <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 800, marginBottom: 6 }}>NZM Tokenomics</h1>
       <p style={{ color: 'var(--text-secondary)', fontSize: 14, marginBottom: 28 }}>The NzemFi music economy — designed to reward listeners and empower artists.</p>
 
-      {/* Token Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 28 }}>
         {[
           { icon: '🎵', title: 'Free User Earnings', desc: 'Ad-supported listeners earn NZM for every qualifying stream (30s+).', val: '0.25 NZM/stream', color: 'var(--nzm-purple-lighter)' },
@@ -35,13 +34,14 @@ export function TokenomicsPage() {
         ))}
       </div>
 
-      {/* Halving Calculator */}
       <div className="card" style={{ padding: '22px', marginBottom: 22 }}>
         <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 700, marginBottom: 6 }}>Halving Calculator</div>
         <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 18 }}>Drag to see how emission rates change as the platform grows.</p>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 18 }}>
           <label style={{ fontSize: 12.5, color: 'var(--text-secondary)', minWidth: 110 }}>Active Users</label>
-          <input type="range" min={100} max={100000000} step={100} value={activeUsers} onChange={e => setActiveUsers(Number(e.target.value))} style={{ flex: 1, accentColor: 'var(--nzm-purple)' }} />
+          <input type="range" min={100} max={100000000} step={100} value={activeUsers}
+            onChange={e => setActiveUsers(Number(e.target.value))}
+            style={{ flex: 1, accentColor: 'var(--nzm-purple)' }} />
           <span style={{ fontSize: 13, color: 'var(--nzm-gold)', minWidth: 90, textAlign: 'right' }}>
             {activeUsers >= 1000000 ? `${(activeUsers / 1000000).toFixed(1)}M` : activeUsers >= 1000 ? `${(activeUsers / 1000).toFixed(0)}K` : activeUsers}
           </span>
@@ -60,7 +60,6 @@ export function TokenomicsPage() {
         </div>
       </div>
 
-      {/* Halving Table */}
       <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border-subtle)', fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700 }}>Halving Schedule</div>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -97,7 +96,7 @@ const GENRES = [
   { name: 'Reggae', emoji: '🌿', bg: 'linear-gradient(135deg,#22c55e,#003a10)' },
   { name: 'Amapiano', emoji: '🎹', bg: 'linear-gradient(135deg,#f97316,#7c3aed)' },
   { name: 'Fuji', emoji: '🥁', bg: 'linear-gradient(135deg,#ec4899,#06b6d4)' },
-  { name: 'Jùjú', emoji: '🎸', bg: 'linear-gradient(135deg,#22c55e,#f0c040)' },
+  { name: 'Juju', emoji: '🎸', bg: 'linear-gradient(135deg,#22c55e,#f0c040)' },
 ];
 
 export function ExplorePage({ onNavigate }: { onNavigate: (page: PageId) => void }) {
@@ -108,7 +107,8 @@ export function ExplorePage({ onNavigate }: { onNavigate: (page: PageId) => void
         <div className="section-header"><span className="section-title">Browse Genres</span></div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
           {GENRES.map(g => (
-            <div key={g.name} style={{ background: g.bg, border: '1px solid var(--border-subtle)', borderRadius: 14, padding: '24px 16px', textAlign: 'center', cursor: 'pointer', transition: 'var(--transition)' }}
+            <div key={g.name}
+              style={{ background: g.bg, border: '1px solid var(--border-subtle)', borderRadius: 14, padding: '24px 16px', textAlign: 'center', cursor: 'pointer', transition: 'var(--transition)' }}
               onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
               onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
             >
@@ -121,10 +121,14 @@ export function ExplorePage({ onNavigate }: { onNavigate: (page: PageId) => void
       <div>
         <div className="section-header"><span className="section-title">🌍 African Artists to Watch</span></div>
         <div style={{ display: 'flex', gap: 14, overflowX: 'auto', paddingBottom: 8 }}>
-          {['Asake','Zinoleesky','BNXN','Seun Kuti','Femi Otedola'].map((a, i) => (
+          {['Asake', 'Zinoleesky', 'BNXN', 'Seun Kuti', 'Femi Otedola'].map((a, i) => (
             <div key={a} className="card" style={{ minWidth: 130, textAlign: 'center', padding: '18px 12px', cursor: 'pointer' }}>
-              <div style={{ width: 60, height: 60, borderRadius: '50%', background: ['linear-gradient(135deg,#7c3aed,#1a0040)','linear-gradient(135deg,#f97316,#401a00)','linear-gradient(135deg,#ec4899,#3a001a)','linear-gradient(135deg,#06b6d4,#003a4a)','linear-gradient(135deg,#22c55e,#003a10)'][i], margin: '0 auto 10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>
-                {['⚡','🍦','🎵','🎷','🎸'][i]}
+              <div style={{
+                width: 60, height: 60, borderRadius: '50%',
+                background: ['linear-gradient(135deg,#7c3aed,#1a0040)', 'linear-gradient(135deg,#f97316,#401a00)', 'linear-gradient(135deg,#ec4899,#3a001a)', 'linear-gradient(135deg,#06b6d4,#003a4a)', 'linear-gradient(135deg,#22c55e,#003a10)'][i],
+                margin: '0 auto 10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22,
+              }}>
+                {['⚡', '🍦', '🎵', '🎷', '🎸'][i]}
               </div>
               <div style={{ fontSize: 13, fontWeight: 500 }}>{a}</div>
               <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>Afrobeats</div>
@@ -138,7 +142,6 @@ export function ExplorePage({ onNavigate }: { onNavigate: (page: PageId) => void
 
 // ─── Analytics Page ───────────────────────────────────────────────────────────
 export function AnalyticsPage() {
-  const { user } = useAuthStore();
   const STATS = [
     { label: 'Total Streams', val: '284.5K', sub: '↑ 18% this month', color: 'var(--nzm-purple-lighter)' },
     { label: 'NZM Earned', val: '8,234', sub: '↑ 2,100 this month', color: 'var(--nzm-gold)' },
@@ -159,23 +162,30 @@ export function AnalyticsPage() {
         ))}
       </div>
 
-      {/* Earnings over time bar chart */}
       <div className="card" style={{ padding: '20px', marginBottom: 20 }}>
         <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Monthly Earnings (NZM)</div>
         <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 120 }}>
           {[400, 680, 520, 900, 750, 1100, 980, 1340, 1200, 1600, 1450, 1800].map((v, i) => (
             <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-              <div style={{ width: '100%', background: i === 11 ? 'linear-gradient(180deg, var(--nzm-purple), var(--nzm-gold))' : 'var(--bg-hover)', borderRadius: '4px 4px 0 0', height: `${(v / 1800) * 100}px`, minHeight: 4, transition: 'var(--transition)' }} />
-              <div style={{ fontSize: 9, color: 'var(--text-muted)', writing: 'vertical-rl' }}>{['J','F','M','A','M','J','J','A','S','O','N','D'][i]}</div>
+              <div style={{
+                width: '100%',
+                background: i === 11 ? 'linear-gradient(180deg, var(--nzm-purple), var(--nzm-gold))' : 'var(--bg-hover)',
+                borderRadius: '4px 4px 0 0',
+                height: `${(v / 1800) * 100}px`,
+                minHeight: 4,
+                transition: 'var(--transition)',
+              }} />
+              <div style={{ fontSize: 9, color: 'var(--text-muted)' }}>
+                {['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'][i]}
+              </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Top tracks */}
       <div className="card" style={{ padding: '20px' }}>
         <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Top Tracks This Month</div>
-        {['Essence','Last Last','Peru','Calm Down','Finesse'].map((title, i) => {
+        {['Essence', 'Last Last', 'Peru', 'Calm Down', 'Finesse'].map((title, i) => {
           const pct = 90 - i * 15;
           return (
             <div key={title} style={{ display: 'flex', alignItems: 'center', gap: 12, paddingBottom: 14, marginBottom: 14, borderBottom: i < 4 ? '1px solid var(--border-subtle)' : 'none' }}>
@@ -186,7 +196,9 @@ export function AnalyticsPage() {
                   <div style={{ width: `${pct}%`, height: '100%', borderRadius: 2, background: 'linear-gradient(90deg, var(--nzm-purple), var(--nzm-gold))' }} />
                 </div>
               </div>
-              <div style={{ fontSize: 12, color: 'var(--nzm-gold)', minWidth: 70, textAlign: 'right' }}>{Math.round(pct * 2840).toLocaleString()} streams</div>
+              <div style={{ fontSize: 12, color: 'var(--nzm-gold)', minWidth: 70, textAlign: 'right' }}>
+                {Math.round(pct * 2840).toLocaleString()} streams
+              </div>
             </div>
           );
         })}
@@ -300,7 +312,9 @@ export function ProfilePage() {
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 800 }}>{user?.full_name || 'Guest User'}</h1>
           <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>@{user?.username || 'username'}</div>
           <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-            {user?.is_premium ? <span className="badge badge-gold">⭐ Premium</span> : <span className="badge badge-purple">Free</span>}
+            {user?.is_premium
+              ? <span className="badge badge-gold">⭐ Premium</span>
+              : <span className="badge badge-purple">Free</span>}
             {user?.is_verified_artist && <span className="badge badge-green">✓ Verified Artist</span>}
           </div>
         </div>
@@ -309,7 +323,6 @@ export function ProfilePage() {
         </button>
       </div>
 
-      {/* Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 24 }}>
         {[
           { label: 'NZM Balance', val: (user?.nzm_balance || 0).toFixed(2), color: 'var(--nzm-gold)' },
@@ -323,7 +336,6 @@ export function ProfilePage() {
         ))}
       </div>
 
-      {/* Settings links */}
       <div className="card" style={{ padding: '4px 0' }}>
         {[
           { icon: '🎤', label: 'Become an Artist', sub: 'Upload music and earn royalties', action: 'Apply' },
@@ -333,7 +345,8 @@ export function ProfilePage() {
           { icon: '🔔', label: 'Notifications', sub: 'Manage what you receive', action: '›' },
           { icon: '⊡', label: 'Account & Data', sub: 'Download your data, delete account', action: '›' },
         ].map((item, i, arr) => (
-          <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px', borderBottom: i < arr.length - 1 ? '1px solid var(--border-subtle)' : 'none', cursor: 'pointer' }}
+          <div key={item.label}
+            style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px', borderBottom: i < arr.length - 1 ? '1px solid var(--border-subtle)' : 'none', cursor: 'pointer' }}
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-hover)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
