@@ -38,7 +38,10 @@ export async function POST(req: NextRequest) {
     }
 
     // 3. Attempt login
-    const { data: authData, error: authErr } = await supabase.auth.signInWithPassword({ email, password });
+    const { data: authData, error: authErr } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
     if (authErr || !authData.user) {
       if (user) {
@@ -48,7 +51,7 @@ export async function POST(req: NextRequest) {
           ? new Date(Date.now() + lockout.minutes * 60 * 1000).toISOString()
           : null;
 
-        await supabase.from('users').update({
+        await (supabase.from('users') as any).update({
           failed_login_attempts: newAttempts,
           ...(lockedUntil ? { account_locked_until: lockedUntil } : {}),
         }).eq('id', user.id);
@@ -63,8 +66,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
     }
 
-    // 4. Reset failed attempts
-    await supabase.from('users').update({
+    // 4. Reset failed attempts on successful login
+    await (supabase.from('users') as any).update({
       failed_login_attempts: 0,
       account_locked_until: null,
     }).eq('id', authData.user.id);
