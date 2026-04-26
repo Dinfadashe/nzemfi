@@ -13,6 +13,10 @@ async function scanWithACRCloud(audioUrl: string): Promise<{
   const accessKey = process.env.ACRCLOUD_ACCESS_KEY!;
   const accessSecret = process.env.ACRCLOUD_ACCESS_SECRET!;
 
+  if (!host || !accessKey || !accessSecret) {
+    return { matched: false, confidence: 0 };
+  }
+
   const httpMethod = 'POST';
   const httpUri = '/v1/identify';
   const dataType = 'audio';
@@ -22,7 +26,6 @@ async function scanWithACRCloud(audioUrl: string): Promise<{
   const stringToSign = [httpMethod, httpUri, accessKey, dataType, signatureVersion, timestamp].join('\n');
   const signature = crypto.createHmac('sha1', accessSecret).update(stringToSign).digest('base64');
 
-  // Fetch audio bytes from Supabase Storage URL
   const audioResp = await fetch(audioUrl);
   if (!audioResp.ok) throw new Error('Failed to fetch audio for scanning');
   const audioBuffer = await audioResp.arrayBuffer();
@@ -39,7 +42,7 @@ async function scanWithACRCloud(audioUrl: string): Promise<{
   const resp = await fetch(`https://${host}${httpUri}`, { method: 'POST', body: formData });
   const result = await resp.json();
 
-  if (result.status.code === 0 && result.metadata?.music?.length > 0) {
+  if (result.status?.code === 0 && result.metadata?.music?.length > 0) {
     const match = result.metadata.music[0];
     return {
       matched: true,
@@ -79,10 +82,8 @@ export async function POST(req: NextRequest) {
     let scanResult;
     try {
       scanResult = await scanWithACRCloud(audio_url);
-    } catch (scanErr) {
-      // If scan service is unreachable, mark for manual review
-      await supabase
-        .from('tracks')
+    } catch {
+      await (supabase.from('tracks') as any)
         .update({ copyright_status: 'pending' })
         .eq('id', track_id);
 
@@ -90,10 +91,11 @@ export async function POST(req: NextRequest) {
     }
 
     if (scanResult.matched && scanResult.confidence >= 85) {
-      // Copyright match — reject upload
-      await supabase
-        .from('tracks')
-        .update({ copyright_status: 'rejected', copyright_fingerprint: `acrcloud_match:${scanResult.title}_${scanResult.artist}` })
+      await (supabase.from('tracks') as any)
+        .update({
+          copyright_status: 'rejected',
+          copyright_fingerprint: `acrcloud_match:${scanResult.title}_${scanResult.artist}`,
+        })
         .eq('id', track_id);
 
       return NextResponse.json({
@@ -102,15 +104,12 @@ export async function POST(req: NextRequest) {
         confidence: scanResult.confidence,
         matched_title: scanResult.title,
         matched_artist: scanResult.artist,
-        matched_label: scanResult.label,
-        message: `Copyright match detected (${scanResult.confidence}% confidence). This audio matches "${scanResult.title}" by ${scanResult.artist}. Upload rejected.`,
+        message: `Copyright match detected. Upload rejected.`,
       });
     }
 
-    // Cleared — mark as cleared
     const fingerprint = `acrcloud_clear:${Date.now()}`;
-    await supabase
-      .from('tracks')
+    await (supabase.from('tracks') as any)
       .update({ copyright_status: 'cleared', copyright_fingerprint: fingerprint })
       .eq('id', track_id);
 
