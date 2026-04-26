@@ -5,9 +5,6 @@ const nextConfig = {
       allowedOrigins: ['localhost:3000'],
     },
   },
-  turbopack: {
-    root: __dirname,
-  },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: '*.supabase.co' },
