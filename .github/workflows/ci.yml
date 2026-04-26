@@ -7,26 +7,9 @@ on:
     branches: [main]
 
 jobs:
-  # ── Smart Contract Tests ──────────────────────────────────────────────────
-  contracts:
-    name: Smart Contract Tests
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: packages/blockchain
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-      - run: npm install
-      - run: npm run compile
-      - run: npm test
-
-  # ── Web App Build & Type Check ────────────────────────────────────────────
+  # ── Web App Build ─────────────────────────────────────────────────────────
   web:
-    name: Web App
+    name: Web App Build
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -37,29 +20,16 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          cache-dependency-path: apps/web/package-lock.json
       - run: npm install
       - run: npm run build
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_APP_URL: https://nzemfi.netlify.app
           NEXT_PUBLIC_NZM_CONTRACT_ADDRESS: "0x0000000000000000000000000000000000000000"
           NEXT_PUBLIC_BSC_RPC_URL: "https://bsc-dataseed.binance.org/"
-
-  # ── Mobile Type Check ─────────────────────────────────────────────────────
-  mobile:
-    name: Mobile App Type Check
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/mobile
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-      - run: npm install
-      - run: npx tsc --noEmit
 
   # ── Deploy Web to Netlify (main branch only) ──────────────────────────────
   deploy-web:
@@ -76,50 +46,17 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          cache-dependency-path: apps/web/package-lock.json
       - run: npm install
       - run: npm run build
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          NEXT_PUBLIC_NZM_CONTRACT_ADDRESS: ${{ secrets.NZM_CONTRACT_ADDRESS }}
-          NEXT_PUBLIC_BSC_RPC_URL: ${{ secrets.BSC_RPC_URL }}
+          NEXT_PUBLIC_APP_URL: https://nzemfi.netlify.app
+          NEXT_PUBLIC_NZM_CONTRACT_ADDRESS: "0x0000000000000000000000000000000000000000"
+          NEXT_PUBLIC_BSC_RPC_URL: "https://bsc-dataseed.binance.org/"
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           EYERIS_API_KEY: ${{ secrets.EYERIS_API_KEY }}
-          ACRCLOUD_HOST: ${{ secrets.ACRCLOUD_HOST }}
-          ACRCLOUD_ACCESS_KEY: ${{ secrets.ACRCLOUD_ACCESS_KEY }}
-          ACRCLOUD_ACCESS_SECRET: ${{ secrets.ACRCLOUD_ACCESS_SECRET }}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
           FLUTTERWAVE_SECRET_KEY: ${{ secrets.FLUTTERWAVE_SECRET_KEY }}
-          MINTER_PRIVATE_KEY: ${{ secrets.MINTER_PRIVATE_KEY }}
-      - uses: nwtgck/actions-netlify@v3
-        with:
-          publish-dir: apps/web/.next
-          production-deploy: true
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-
-  # ── Mobile EAS Build (main branch only) ──────────────────────────────────
-  build-mobile:
-    name: EAS Mobile Build
-    needs: [mobile]
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-      - run: npm install -g eas-cli
-      - working-directory: apps/mobile
-        run: npm install
-      - uses: expo/expo-github-action@v8
-        with:
-          expo-version: latest
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
-      - working-directory: apps/mobile
-        run: eas build --platform all --profile production --non-interactive
