@@ -1,11 +1,10 @@
 [build]
   base = "apps/web"
-  command = "npm run build"
+  command = "npm install && npm run build"
   publish = ".next"
 
 [build.environment]
   NODE_VERSION = "20"
-  NPM_VERSION = "10"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
@@ -16,21 +15,3 @@
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(self), microphone=(self)"
-
-[[headers]]
-  for = "/api/*"
-  [headers.values]
-    Cache-Control = "no-store"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  conditions = {Role = ["admin"]}
-
-[dev]
-  command = "npm run dev"
-  port = 3000
-  targetPort = 3000
-  framework = "next"
