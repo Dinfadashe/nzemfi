@@ -31,7 +31,7 @@ nzemfi/
 - Focus: **Build the user base. Earn adoption. Grow the community.**
 
 ### Phase 2 — On-Chain (Post-Adoption)
-- NZM BEP-20 token deployed on BNB Smart Chain
+- NZM token deployed on a blockchain (TBA)
 - All in-app balances migrated to on-chain wallets **1:1 with no loss**
 - Withdrawals become instant and automated via smart contract
 - The `packages/blockchain/` folder contains the contract, ready to deploy when the time is right
